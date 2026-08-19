@@ -6,7 +6,7 @@ FramePipelineManager::FramePipelineManager(size_t pool_size, int frame_height,
   for (size_t i = 0; i < pool_size; ++i) {
     auto frame = std::make_shared<FrameDesc>();
     frame->image.create(frame_height, frame_width, cv_type);
-    pool_storage.push_back(frame);
+    pool_storage_.push_back(frame);
     free_pool_.push(frame);
   }
 }
@@ -24,8 +24,8 @@ std::shared_ptr<FrameDesc> FramePipelineManager::acquire_buffer() {
 void FramePipelineManager::push_latest(std::shared_ptr<FrameDesc> new_frame) {
   std::shared_ptr<FrameDesc> frame_to_recycle = nullptr;
   {
-    std::lock_guard<std::mutext> lock(mtx_);
-    if (latests_slot_) {
+    std::lock_guard<std::mutex> lock(mtx_);
+    if (latest_slot_) {
       frame_to_recycle = latest_slot_;
     }
     latest_slot_ = new_frame;
@@ -54,7 +54,7 @@ std::shared_ptr<FrameDesc> FramePipelineManager::pop_latest() {
   }
 
   auto frame = latest_slot_;
-  latest_slot = nullptr;
+  latest_slot_ = nullptr;
   return frame;
 }
 
@@ -71,5 +71,9 @@ void FramePipelineManager::stop() {
     std::lock_guard<std::mutex> lock(mtx_);
     stop_flag_ = true;
   }
-  cv_consumer.notify_all();
+  cv_consumer_.notify_all();
 }
+
+int FramePipelineManager::getWidth() const noexcept { return frame_width_; }
+
+int FramePipelineManager::getHeight() const noexcept { return frame_height_; }

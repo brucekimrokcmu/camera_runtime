@@ -3,7 +3,7 @@
 
 #include "preprocess_infer.hpp"
 
-PreprocessInferConsumer::PreprocesInferConsumer(FramePipelineManager& pipeline)
+PreprocessInferConsumer::PreprocessInferConsumer(FramePipelineManager& pipeline)
     : pipeline_(pipeline) {}
 
 PreprocessInferConsumer::~PreprocessInferConsumer() { stop(); }

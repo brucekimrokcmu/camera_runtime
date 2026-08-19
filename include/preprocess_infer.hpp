@@ -7,19 +7,19 @@
 #include "thread_safe_queue.hpp"
 
 class PreprocessInferConsumer {
+ public:
+  explicit PreprocessInferConsumer(FramePipelineManager& pipeline);
+  ~PreprocessInferConsumer();
+
+  void start();
+  void stop();
+
  private:
   FramePipelineManager& pipeline_;
   std::atomic<bool> running_{false};
   std::thread thread_;
 
   void run();
-
- public:
-  explict PreprocessInferConsumer(FramePipelineManager& pipeline);
-  ~PreprocessInferConsumer();
-
-  void start();
-  void stop();
 };
 
 #endif  // PREPROCESS_INFER_HPP
