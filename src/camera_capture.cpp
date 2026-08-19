@@ -45,8 +45,7 @@ void CameraCapture::start() {
   }
 
   running_ = true;
-  thread_ =
-      std::thread(&CameraCapture::run, this);  // TODO: understand this pointer
+  thread_ = std::thread(&CameraCapture::run, this);
 }
 
 void CameraCapture::stop() {

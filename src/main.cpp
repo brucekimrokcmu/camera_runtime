@@ -6,9 +6,7 @@
 
 int main() {
   // define pool_size, frame height, width
-  //
   // initialize manager
-  //
   // thread for camera producer and consumer
 
   constexpr size_t BUFFER_POOL_SIZE = 4;
