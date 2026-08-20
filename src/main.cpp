@@ -13,8 +13,7 @@ int main() {
   constexpr int FRAME_WIDTH = 1920;
   constexpr int FRAME_HEIGHT = 1080;
 
-  FramePipelineManager pipeline(BUFFER_POOL_SIZE, FRAME_HEIGHT, FRAME_WIDTH,
-                                CV_8UC3);
+  FramePipelineManager pipeline(BUFFER_POOL_SIZE, FRAME_HEIGHT, FRAME_WIDTH, CV_8UC3);
 
   CameraCapture camera(pipeline);
   PreprocessInferConsumer consumer(pipeline);
@@ -23,7 +22,9 @@ int main() {
   consumer.start();
   camera.start();
 
-  std::this_thread::sleep_for(std::chrono::seconds(3));
+  // std::this_thread::sleep_for(std::chrono::seconds(3));
+  std::cout << "Press Enter to stop..." << std::endl;
+  std::cin.get();
 
   std::cout << "Shutting down the pipeline..." << std::endl;
   camera.stop();
