@@ -1,10 +1,8 @@
-#include <chrono>
-#include <opencv2/opencv.hpp>
-
 #include "camera_capture.hpp"
 
-CameraCapture::CameraCapture(FramePipelineManager& pipeline,
-                             const std::string& device_path)
+#include <opencv2/opencv.hpp>
+
+CameraCapture::CameraCapture(FramePipelineManager& pipeline, const std::string& device_path)
     : pipeline_(pipeline), device_path_(device_path) {}
 
 CameraCapture::CameraCapture(FramePipelineManager& pipeline, int device_id)
@@ -24,9 +22,8 @@ void CameraCapture::start() {
   }
 
   if (!cap_.isOpened()) {
-    std::string err_msg =
-        "Error: Unable to open camera device at " +
-        (device_path_.empty() ? std::to_string(device_id_) : device_path_);
+    std::string err_msg = "Error: Unable to open camera device at " +
+                          (device_path_.empty() ? std::to_string(device_id_) : device_path_);
     std::cerr << err_msg << std::endl;
     throw std::runtime_error(err_msg);
   }
@@ -37,9 +34,8 @@ void CameraCapture::start() {
   cv::Mat test_frame;
   if (!cap_.read(test_frame) || test_frame.empty()) {
     cap_.release();
-    std::string err_msg =
-        "Error: Camera opened, but failed to read initial frame from " +
-        (device_path_.empty() ? std::to_string(device_id_) : device_path_);
+    std::string err_msg = "Error: Camera opened, but failed to read initial frame from " +
+                          (device_path_.empty() ? std::to_string(device_id_) : device_path_);
     std::cerr << err_msg << std::endl;
     throw std::runtime_error(err_msg);
   }
@@ -62,13 +58,12 @@ void CameraCapture::run() {
   uint64_t frame_counter = 0;
 
   double fps = cap_.get(cv::CAP_PROP_FPS);
-  if (fps <= 0, 0) {
+  if (fps <= 0) {
     fps = 60.0;
   }
 
-  auto frame_duration =
-      std::chrono::duration_cast<std::chrono::steady_clock::duration>(
-          std::chrono::duration<double>(1.0 / fps));
+  auto frame_duration = std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+      std::chrono::duration<double>(1.0 / fps));
 
   while (running_) {
     auto start_time = std::chrono::steady_clock::now();
