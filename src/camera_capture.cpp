@@ -1,6 +1,7 @@
 #include "camera_capture.hpp"
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/videoio.hpp>
 
 CameraCapture::CameraCapture(FramePipelineManager& pipeline, const std::string& device_path)
     : pipeline_(pipeline), device_path_(device_path) {}
@@ -58,6 +59,11 @@ void CameraCapture::run() {
   uint64_t frame_counter = 0;
 
   double fps = cap_.get(cv::CAP_PROP_FPS);
+
+  std::cout << "[CameraCatpure] FPS: " << fps << std::endl;
+  std::cout << "[CameraCapture] Width: " << cap_.get(cv::CAP_PROP_FRAME_WIDTH) << std::endl;
+  std::cout << "[CameraCapture] Height: " << cap_.get(cv::CAP_PROP_FRAME_HEIGHT) << std::endl;
+
   if (fps <= 0) {
     fps = 60.0;
   }
