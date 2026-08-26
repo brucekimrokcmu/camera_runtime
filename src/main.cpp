@@ -1,36 +1,26 @@
-#include <chrono>
+#include <iostream>
 
-#include "camera_capture.hpp"
-#include "preprocess_infer.hpp"
-#include "thread_safe_queue.hpp"
+#include "camera_capture_baseline.hpp"
+#include "latest_frame_mailbox.hpp"
+#include "opencv_process_infer.hpp"
 
 int main() {
-  // define pool_size, frame height, width
-  // initialize manager
-  // thread for camera producer and consumer
+  LatestFrameMailbox latest_mailbox;
+  CameraCaptureBaseline camera_capture(latest_mailbox);
+  OpenCVProcessInfer opencv_process(latest_mailbox);
 
-  constexpr size_t BUFFER_POOL_SIZE = 4;
-  constexpr int FRAME_WIDTH = 1920;
-  constexpr int FRAME_HEIGHT = 1080;
+  std::cout << "starting camera capture pipeline..." << std::endl;
+  opencv_process.start();
+  camera_capture.start();
 
-  FramePipelineManager pipeline(BUFFER_POOL_SIZE, FRAME_HEIGHT, FRAME_WIDTH, CV_8UC3);
-
-  CameraCapture camera(pipeline);
-  PreprocessInferConsumer consumer(pipeline);
-
-  std::cout << "starting pipeline..." << std::endl;
-  consumer.start();
-  camera.start();
-
-  // std::this_thread::sleep_for(std::chrono::seconds(3));
   std::cout << "Press Enter to stop..." << std::endl;
   std::cin.get();
 
-  std::cout << "Shutting down the pipeline..." << std::endl;
-  camera.stop();
-  consumer.stop();
+  std::cout << "Stopping the camera capture pipeline" << std::endl;
+  camera_capture.stop();
+  opencv_process.stop();
 
-  std::cout << "Pipeline finished successfully." << std::endl;
+  std::cout << "Camera capture pipeline finished successfully." << std::endl;
 
   return 0;
 }

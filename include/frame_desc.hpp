@@ -6,7 +6,7 @@
 
 struct FrameDesc {
   uint64_t frame_id{0};
-  std::chrono::steady_clock::time_point timestamp;
+  std::chrono::steady_clock::time_point capture_time;
   cv::Mat image;
 };
 
