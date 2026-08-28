@@ -12,7 +12,7 @@
 
 class CameraCaptureBaseline {
  public:
-  explicit CameraCaptureBaseline(LatestFrameMailbox& mailbox);
+  explicit CameraCaptureBaseline(LatestFrameMailbox& mailbox, std::string device_path);
   explicit CameraCaptureBaseline(LatestFrameMailbox& mailbox, int device_id);
   ~CameraCaptureBaseline();
 

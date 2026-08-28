@@ -4,9 +4,13 @@
 #include "latest_frame_mailbox.hpp"
 #include "opencv_process_infer.hpp"
 
+// util func to auto detect usb webcam - use ioctl
+
 int main() {
+  std::string DEVICE_PATH = "/dev/video4";
+
   LatestFrameMailbox latest_mailbox;
-  CameraCaptureBaseline camera_capture(latest_mailbox);
+  CameraCaptureBaseline camera_capture(latest_mailbox, DEVICE_PATH);
   OpenCVProcessInfer opencv_process(latest_mailbox);
 
   std::cout << "starting camera capture pipeline..." << std::endl;

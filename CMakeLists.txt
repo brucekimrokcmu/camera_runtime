@@ -11,9 +11,9 @@ include_directories(include)
 
 add_executable(camera_pipeline
 	src/main.cpp
-	src/thread_safe_queue.cpp
-	src/camera_capture.cpp
-	src/preprocess_infer.cpp
+  src/camera_capture_baseline.cpp
+  src/latest_frame_mailbox.cpp
+  src/opencv_process_infer.cpp
 )
 
 target_include_directories(camera_pipeline PRIVATE include)

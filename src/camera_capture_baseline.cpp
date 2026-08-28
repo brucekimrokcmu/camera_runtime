@@ -2,10 +2,12 @@
 
 #include <chrono>
 #include <cstdint>
+#include <opencv2/videoio.hpp>
 
 #include "latest_frame_mailbox.hpp"
 
-CameraCaptureBaseline::CameraCaptureBaseline(LatestFrameMailbox& mailbox) : mailbox_(mailbox) {}
+CameraCaptureBaseline::CameraCaptureBaseline(LatestFrameMailbox& mailbox, std::string device_path)
+    : mailbox_(mailbox), device_path_(device_path) {}
 
 CameraCaptureBaseline::CameraCaptureBaseline(LatestFrameMailbox& mailbox, int device_id)
     : mailbox_(mailbox), device_id_(device_id) {}
@@ -33,6 +35,18 @@ void CameraCaptureBaseline::stop() {
 }
 
 void CameraCaptureBaseline::run() {
+  bool is_opened = false;
+  if (!device_path_.empty()) {
+    is_opened = cap_.open(device_path_, cv::CAP_V4L2);
+  } else {
+    is_opened = cap_.open(device_id_, cv::CAP_V4L2);
+  }
+
+  if (!is_opened) {
+    running_ = false;
+    return;
+  }
+
   uint64_t frame_id = 0;
   while (running_) {
     cv::Mat image;
@@ -47,4 +61,6 @@ void CameraCaptureBaseline::run() {
 
     mailbox_.push(std::move(frame));
   }
+
+  cap_.release();
 }
