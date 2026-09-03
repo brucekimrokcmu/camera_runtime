@@ -5,6 +5,7 @@
 #include <opencv2/videoio.hpp>
 
 #include "latest_frame_mailbox.hpp"
+#include "utils/profiler.hpp"
 
 CameraCaptureBaseline::CameraCaptureBaseline(LatestFrameMailbox& mailbox, std::string device_path)
     : mailbox_(mailbox), device_path_(device_path) {}
@@ -49,17 +50,26 @@ void CameraCaptureBaseline::run() {
 
   uint64_t frame_id = 0;
   while (running_) {
+    uint64_t current_id = frame_id++;
     cv::Mat image;
-    if (!cap_.read(image)) {
-      continue;
+    {
+      utils::ScopedTimer timer("camera_capture", current_id);
+      if (!cap_.read(image)) {
+        continue;
+      }
     }
 
     FrameDesc frame;
-    frame.frame_id = frame_id++;
+    frame.frame_id = current_id;
     frame.capture_time = std::chrono::steady_clock::now();
-    frame.image = image.clone();
-
-    mailbox_.push(std::move(frame));
+    {
+      utils::ScopedTimer timer("image_clone", current_id);
+      frame.image = image.clone();
+    }
+    {
+      utils::ScopedTimer timer("mailbox_push", current_id);
+      mailbox_.push(std::move(frame));
+    }
   }
 
   cap_.release();

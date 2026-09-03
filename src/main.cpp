@@ -3,6 +3,7 @@
 #include "camera_capture_baseline.hpp"
 #include "latest_frame_mailbox.hpp"
 #include "opencv_process_infer.hpp"
+#include "utils/profiler.hpp"
 
 // util func to auto detect usb webcam - use ioctl
 
@@ -23,6 +24,8 @@ int main() {
   std::cout << "Stopping the camera capture pipeline" << std::endl;
   camera_capture.stop();
   opencv_process.stop();
+
+  utils::Profiler::instance().dump_latency_csv("outputs/baseline_profile.csv");
 
   std::cout << "Camera capture pipeline finished successfully." << std::endl;
 

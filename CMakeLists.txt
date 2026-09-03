@@ -14,6 +14,7 @@ add_executable(camera_pipeline
   src/camera_capture_baseline.cpp
   src/latest_frame_mailbox.cpp
   src/opencv_process_infer.cpp
+  src/utils/profiler.cpp
 )
 
 target_include_directories(camera_pipeline PRIVATE include)

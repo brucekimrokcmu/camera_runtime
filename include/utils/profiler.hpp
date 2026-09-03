@@ -2,6 +2,7 @@
 #define PROFILER_HPP
 
 #include <chrono>
+#include <mutex>
 #include <ratio>
 #include <string>
 #include <vector>
@@ -27,29 +28,42 @@ struct MemoryMetric {
 
 class Profiler {
  public:
+  static Profiler& instance();
+
   static std::chrono::steady_clock::time_point now() { return std::chrono::steady_clock::now(); }
 
   static MemoryMetric get_memory_usage();
 
-  static void dump_latency_csv(const std::string& filepath,
-                               const std::vector<LatencyMetric>& metrics);
+  void record_metric(LatencyMetric metric);
+
+  void dump_latency_csv(const std::string& filepath);
+
+  void clear();
+
+ private:
+  Profiler() = default;
+  ~Profiler() = default;
+  Profiler(const Profiler&) = delete;
+  Profiler& operator=(const Profiler&) = delete;
+
+  std::mutex mutex_;
+  std::vector<LatencyMetric> metrics_;
 };
 
 // RAII Timer Scope Helper
 class ScopedTimer {
  public:
-  ScopedTimer(std::string name, uint64_t frame_id, std::vector<LatencyMetric>& storage)
-      : name_(name), frame_id_(frame_id), storage_(storage), start_(Profiler::now()) {};
+  ScopedTimer(std::string name, uint64_t frame_id)
+      : name_(name), frame_id_(frame_id), start_(Profiler::now()) {};
 
   ~ScopedTimer() {
     auto end = Profiler::now();
-    storage_.push_back({name_, frame_id_, start_, end});
+    Profiler::instance().record_metric({name_, frame_id_, start_, end});
   };
 
  private:
   std::string name_;
   uint64_t frame_id_;
-  std::vector<LatencyMetric>& storage_;
   std::chrono::steady_clock::time_point start_;
 };
 
